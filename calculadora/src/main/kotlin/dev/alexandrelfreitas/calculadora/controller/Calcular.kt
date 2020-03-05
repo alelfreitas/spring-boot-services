@@ -27,7 +27,7 @@ class Calcular {
     private lateinit var calcularService: CalcularService
 
     /**
-     * Chamada /soma/1,2,3,4,5
+     * Chamada /soma/n,n,n,n,...
      */
     @RequestMapping("/soma/{numeros}")
     fun somaNumeros(@PathVariable numeros: String): ResponseEntity<Any> {
@@ -35,11 +35,27 @@ class Calcular {
     }
 
     /**
-     * Chamada /subtrai/1,2,3,4,5
+     * Chamada /subtrai/n,n,n,n,...
      */
     @RequestMapping("/subtrai/{numeros}")
     fun subtraiNumeros(@PathVariable numeros: String): ResponseEntity<Any> {
         return ResponseEntity(calcularService.subtrairNumeros(numeros), HttpStatus.OK)
+    }
+
+    /**
+     * Chamada /multiplica/n,n,n,n,...
+     */
+    @RequestMapping("/multiplica/{numeros}")
+    fun multiplicaNumeros(@PathVariable numeros: String): ResponseEntity<Any> {
+        return ResponseEntity(calcularService.mutiplicarNumeros(numeros), HttpStatus.OK)
+    }
+
+    /**
+     * Chamada /divide/n,n,n,n,...
+     */
+    @RequestMapping("/divide/{numeros}")
+    fun divideNumeros(@PathVariable numeros: String): ResponseEntity<Any> {
+        return ResponseEntity(calcularService.dividirNumeros(numeros), HttpStatus.OK)
     }
 
 }
