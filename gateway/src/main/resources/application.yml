@@ -1,3 +1,5 @@
+ystrix.command.fallbackcmd.execution.isolation.thread.timeoutInMilliseconds: 3000
+
 server:
   port: 5555
 
@@ -7,13 +9,19 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: host_route
-          uri: https://example.org
+        - id: calculadora
+          uri: localhost:8081
           predicates:
-            - Host=**.somehost.org,**.anotherhost.org
+            - Path=/api/**
 eureka:
   client:
     registerWithEureka: true
     fetchRegistry: true
     serviceUrl:
       defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: hystrix.stream
