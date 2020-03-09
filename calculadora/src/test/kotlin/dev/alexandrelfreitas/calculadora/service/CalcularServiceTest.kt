@@ -43,7 +43,7 @@ class CalcularServiceTest {
 
     @Test
     fun quandoMultiplicarNumerosCalculo_DeveResultarResultadoMultiplicar(){
-        val resultado = calcularService.mutiplicarNumeros(NUMEROS_CALCULO)
+        val resultado = calcularService.multiplicarNumeros(NUMEROS_CALCULO)
         assert(resultado == RESULTADO_MULTIPLICAR)
     }
 
