@@ -8,7 +8,7 @@ import org.springframework.test.context.junit4.SpringRunner
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
-class CalcularServiceTest {
+class CalcularControllerServiceTest {
 
     @Autowired
     private lateinit var calcularService: CalcularService

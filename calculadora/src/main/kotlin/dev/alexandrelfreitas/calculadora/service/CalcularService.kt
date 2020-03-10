@@ -1,5 +1,6 @@
 package dev.alexandrelfreitas.calculadora.service
 
+import dev.alexandrelfreitas.calculadora.enums.TipoCalculo
 import dev.alexandrelfreitas.calculadora.message.MessageConsumer
 import dev.alexandrelfreitas.calculadora.model.ContaDto
 import org.slf4j.Logger
@@ -11,13 +12,13 @@ import java.math.RoundingMode
 @Service
 class CalcularService {
 
-    private val logger: Logger = LoggerFactory.getLogger(MessageConsumer::class.java.getSimpleName())
+    private val LOG: Logger = LoggerFactory.getLogger(MessageConsumer::class.java.getSimpleName())
 
     /**
      * somar todos os numeros recebidos no formato "n,n,n,n,n,..."
      */
     fun somarNumeros(numeros: String): BigDecimal {
-        return numeros.split(",").map { it.toBigDecimal() }
+        return numeros.valueToList()
                 .reduce{acc, number -> acc + number}
     }
 
@@ -25,7 +26,7 @@ class CalcularService {
      * subtrair todos os numeros recebidos no formato "n,n,n,n,n,..."
      */
     fun subtrairNumeros(numeros: String): BigDecimal {
-        return numeros.split(",").map { it.toBigDecimal() }
+        return numeros.valueToList()
                 .reduce {acc, numero -> acc - numero}
     }
 
@@ -33,7 +34,7 @@ class CalcularService {
      * multiplicar todos os numeros recebidos no formato "n,n,n,n,n,..."
      */
     fun multiplicarNumeros(numeros: String): BigDecimal {
-        return numeros.split(",").map { it.toBigDecimal() }
+        return numeros.valueToList()
                 .reduce {acc, numero -> acc * numero}
     }
 
@@ -41,18 +42,29 @@ class CalcularService {
      * dividir todos os numeros recebidos no formato "n,n,n,n,n,..."
      */
     fun dividirNumeros(numeros: String): BigDecimal {
-        return numeros.split(",").map { it.toBigDecimal() }
-                .reduce{acc, numero -> acc.divide(numero,2, RoundingMode.HALF_UP)}
+        return if (numeros.valueToList().contains(BigDecimal.ZERO))
+            BigDecimal.ZERO
+        else
+            numeros.valueToList()
+                    .reduce{acc, numero -> acc.divide(numero,2, RoundingMode.HALF_UP)}
     }
 
     /**
-     * conta conforme mensagem recebida
+     * calcula conforme objeto recebido
      */
     fun calcular(conta: ContaDto): BigDecimal = when (conta.tipoCalculo) {
-            "soma" -> somarNumeros(conta.valores)
-            "subtrai" -> subtrairNumeros(conta.valores)
-            "multiplica" -> multiplicarNumeros(conta.valores)
-            "divide" -> dividirNumeros(conta.valores)
+            TipoCalculo.SOMA.name -> somarNumeros(conta.valores)
+            TipoCalculo.SUBTRACAO.name -> subtrairNumeros(conta.valores)
+            TipoCalculo.MULTIPLICACAO.name -> multiplicarNumeros(conta.valores)
+            TipoCalculo.DIVISAO.name -> dividirNumeros(conta.valores)
             else -> BigDecimal.ZERO
+    }
+
+    /**
+     * String extension para converter string para lista de bigdecimal
+     */
+    fun String.valueToList() = this.split(",").map {
+        if (it.matches("-?\\d+(\\.\\d+)?".toRegex())) it.toBigDecimal()
+        else BigDecimal.ZERO
     }
 }
