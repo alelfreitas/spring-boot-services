@@ -1,0 +1,73 @@
+version: "3"
+services:
+
+  rabbit:
+    image: rabbitmq:management
+    hostname: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+      - 25672:25672
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=pass
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:15672"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - net
+
+  mysql:
+    image: mysql/mysql-server:5.7
+    ports:
+      - 3306:3306
+    volumes:
+      - ../.docker/mysql/data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=pass
+      - MYSQL_DATABASE=table
+      - TZ=Brazil/East
+    networks:
+      - net
+
+  discovery:
+    image: servicediscovery:0.0.1
+    hostname: servicediscovery
+    ports:
+      - 8761:8761
+    networks:
+      - net
+  
+  gateway:
+    image: gateway:0.0.1
+    hostname: gateway
+    ports:
+      - 5555:5555
+    depends_on:
+      - discovery
+    networks: 
+      - net
+
+  calculadora:
+    image: calculadora:0.0.1
+    hostname: calculadora
+    ports:
+      - 8081:8081
+    depends_on:
+      - rabbit
+      - discovery
+      - gateway
+    networks:
+      - net
+
+networks:
+  net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: "111.111.10.0/24"
